@@ -1,0 +1,4 @@
+library(ggplot2)
+setwd("~/Apprenticeship work/Football Project")
+season_results <- as.data.frame(read.csv("Datasets - Results.csv"))
+player_apps <- as.data.frame(read.csv("Datasets - Player_Apps.csv"))
