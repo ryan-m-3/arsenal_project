@@ -1,4 +1,48 @@
+library(dplyr)
 library(ggplot2)
-setwd("~/Apprenticeship work/Football Project")
+library(lubridate)
+library(tidyverse)
+library(dygraphs)
+library(reshape2)
+library(hrbrthemes)
+library(RColorBrewer)
+library(scales)
+library(plotly)
+library(data.table)
+library(zoo)
+library(xts)
+library(RODBC)
+setwd("~/Arsenal Analysis")
 season_results <- as.data.frame(read.csv("Datasets - Results.csv"))
 player_apps <- as.data.frame(read.csv("Datasets - Player_Apps.csv"))
+player_defence <- as.data.frame(read.csv("Datasets - Player_Defence.csv"))
+season_formations <- as.data.frame(read.csv("Datasets - Formations.csv"))
+player_attack <- as.data.frame(read.csv("Datasets - Player_attack.csv"))
+
+defensive_apps <- data.frame(player_apps %>%
+                          filter(Area == 'Defence'))
+
+midfield_apps <- data.frame(player_apps %>%
+                         filter(Area == 'Midfield'))
+
+attacking_apps <- data.frame(player_apps %>%
+                       filter(Area == 'Attack'))
+
+defensive_attack <- data.frame(player_attack %>%
+                                 filter(Area == 'Defence'))
+
+midfield_attack <- data.frame(player_attack %>%
+                                filter(Area == 'Midfield'))
+
+attacking_attack <- data.frame(player_attack %>%
+                              filter(Area == 'Attack'))
+
+defensive_defence <- data.frame(player_defence %>%
+                                 filter(Area == 'Defence'))
+
+midfield_defence <- data.frame(player_defence %>%
+                                 filter(Area == 'Midfield'))
+
+attacking_defence <- data.frame(player_defence %>%
+                                  filter(Area == 'Attack'))
+
