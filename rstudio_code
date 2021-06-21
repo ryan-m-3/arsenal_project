@@ -13,10 +13,9 @@ library(zoo)
 library(xts)
 library(RODBC)
 setwd("~/Arsenal Analysis")
-season_results <- as.data.frame(read.csv("Datasets - Results.csv"))
+season_results <- data.table(read.csv("Datasets - Results.csv"))
 player_apps <- as.data.frame(read.csv("Datasets - Player_Apps.csv"))
 player_defence <- as.data.frame(read.csv("Datasets - Player_Defence.csv"))
-season_formations <- as.data.frame(read.csv("Datasets - Formations.csv"))
 player_attack <- as.data.frame(read.csv("Datasets - Player_attack.csv"))
 
 defensive_apps <- data.frame(player_apps %>%
@@ -46,3 +45,18 @@ midfield_defence <- data.frame(player_defence %>%
 attacking_defence <- data.frame(player_defence %>%
                                   filter(Area == 'Attack'))
 
+attack_apps_pepe <- data.table(attacking_apps %>%
+                           filter(Players == 'Pepe'))
+
+attack_apps_pepe$Area <- NULL
+attack_apps_pepe$Position <- NULL
+
+attack_apps_pepe_GW <- melt(attack_apps_pepe, id=c("Players", "Games.Started", "Games.come.on.as.a.sub", "Mins"))
+attack_apps_pepe_GW <- data.table(attack_apps_pepe_GW %>%
+  rename('GW' = variable))
+
+season_results <- season_results %>%
+  rename('GW' = Gameweek)
+
+
+pepe_results <- merge.data.table(attack_apps_pepe_GW, season_results, by = 'GW')
