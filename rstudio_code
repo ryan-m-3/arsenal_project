@@ -12,20 +12,20 @@ library(data.table)
 library(zoo)
 library(xts)
 library(RODBC)
-setwd("~/Arsenal Analysis")
+setwd("~/Desktop/Arsenal Analysis")
 season_results <- data.table(read.csv("Datasets - Results.csv"))
 player_apps <- as.data.frame(read.csv("Datasets - Player_Apps.csv"))
 player_defence <- as.data.frame(read.csv("Datasets - Player_Defence.csv"))
 player_attack <- as.data.frame(read.csv("Datasets - Player_attack.csv"))
 
 defensive_apps <- data.frame(player_apps %>%
-                          filter(Area == 'Defence'))
+                               filter(Area == 'Defence'))
 
 midfield_apps <- data.frame(player_apps %>%
-                         filter(Area == 'Midfield'))
+                              filter(Area == 'Midfield'))
 
-attacking_apps <- data.frame(player_apps %>%
-                       filter(Area == 'Attack'))
+attacking_apps <- data.table(player_apps %>%
+                               filter(Area == 'Attack'))
 
 defensive_attack <- data.frame(player_attack %>%
                                  filter(Area == 'Defence'))
@@ -33,30 +33,60 @@ defensive_attack <- data.frame(player_attack %>%
 midfield_attack <- data.frame(player_attack %>%
                                 filter(Area == 'Midfield'))
 
-attacking_attack <- data.frame(player_attack %>%
-                              filter(Area == 'Attack'))
+attacking_attack <- data.table(player_attack %>%
+                                 filter(Area == 'Attack'))
 
 defensive_defence <- data.frame(player_defence %>%
-                                 filter(Area == 'Defence'))
+                                  filter(Area == 'Defence'))
 
 midfield_defence <- data.frame(player_defence %>%
                                  filter(Area == 'Midfield'))
 
-attacking_defence <- data.frame(player_defence %>%
+attacking_defence <- data.table(player_defence %>%
                                   filter(Area == 'Attack'))
 
 attack_apps_pepe <- data.table(attacking_apps %>%
-                           filter(Players == 'Pepe'))
+                                 filter(Players == 'Pepe'))
 
 attack_apps_pepe$Area <- NULL
 attack_apps_pepe$Position <- NULL
 
 attack_apps_pepe_GW <- melt(attack_apps_pepe, id=c("Players", "Games.Started", "Games.come.on.as.a.sub", "Mins"))
 attack_apps_pepe_GW <- data.table(attack_apps_pepe_GW %>%
-  rename('GW' = variable))
+                                    rename('GW' = variable))
+
+attack_apps_pepe_GW$GW <- as.integer(attack_apps_pepe_GW$GW)
 
 season_results <- season_results %>%
   rename('GW' = Gameweek)
 
 
 pepe_results <- merge.data.table(attack_apps_pepe_GW, season_results, by = 'GW')
+pepe_results$Mins <- NULL
+pepe_results$xA <- NULL
+pepe_results$Other.data.placeholder <- NULL
+pepe_results$Other.data.placeholder.1 <- NULL
+pepe_results$Other.data.placeholder.2 <- NULL
+
+attacking_apps$Area <- NULL
+attacking_attack$Area <- NULL
+attacking_defence$Area <- NULL
+
+attacking_apps_melted <- melt(attacking_apps, id=c("Players","Games.Started", "Games.come.on.as.a.sub", "Mins","Position"))
+attacking_apps_melted <- data.table(attacking_apps_melted %>%
+                                      rename('GW' = variable))
+
+attacking_attack_melted <- melt(attacking_attack, id=c("Players","Position"))
+attacking_attack_melted <- data.table(attacking_attack_melted %>%
+                                        arrange(Players))
+                                      
+attacking_defence_melted <- melt(attacking_defence, id=c("Players","Position"))
+attacking_defence_melted <- data.table(attacking_defence_melted %>%
+                                        arrange(Players))
+
+attack_megatable <- merge.data.table(attacking_defence, attacking_attack, by = 'Players')
+attack_megatable_melt <- melt(attack_megatable, id=c("Players","Position.x","Position.y"))
+attack_megatable_melt$Position.y <- NULL
+
+attack_megatable_melt <- data.table(attack_megatable_melt %>%
+                                      arrange(Players))
